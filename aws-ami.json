@@ -1,0 +1,9 @@
+{
+    "vars":{
+    // variables para la autenticacion a AWS desde las variables de entorno
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    },
+    
+
+}
