@@ -1,9 +1,47 @@
 {
-    "vars":{
-    // variables para la autenticacion a AWS desde las variables de entorno
+    "vars": {
+        "comments": "// variables to authentication to AWS from the environment variables",
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
     },
-    
 
+    "builders": [{
+        "comments_builders": " // We can create more than one instance.",
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "comment_access_key": "// use of variables already defined in the file",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "us-east-2",
+        "source_ami": "85256.....",
+        "comments_source_ami": "//SO: CentOS 7.4  ID",
+        "source_ami_filter": {
+            "owners": ["8525..."],
+            "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "centos",
+        "ami_name": "packer-demo"
+    }],
+
+    "provisioners": [
+        {
+            "provisioners_comments": "// configurations for the server ort AMI (here: install docker and RSA keys)",
+            "comments": "// Add value of a file to our RSA key",
+            "type": "file",
+            "source_comment": "//path absolute or relative",
+            "source": "./source/packer-key.pub", 
+            "destination_comment": "//destination AMI",
+            "destination": "~/.ssh" 
+        },
+        {
+            "comments": "// Add the public key RSA into directory authorized keys",
+            "type": "shell",
+            "inline": ["cat ~/.ssh/packer-key.pub >> ~/.ssh/authorized_keys"]
+        },
+        {
+            "comments": "// install docker",
+            "type": "shell",
+            "script": "./source/docker-install.sh"
+        }
+    ]
 }
