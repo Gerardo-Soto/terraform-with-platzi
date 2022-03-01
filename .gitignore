@@ -25,3 +25,6 @@ hs_err_pid*
 # terraform plugins
 .terraform*
 terraform/
+
+backend-with-s3/.terraform*
+backend-with-s3/.terraform/
