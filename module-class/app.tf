@@ -10,5 +10,6 @@ module "my-app-platzi" {
     tags = var.tags
     securitygroup_ssh = var.securitygroup_ssh
     ingress_rules = var.ingress_rules
+    egress_rules = var.egress_rules
 }
 

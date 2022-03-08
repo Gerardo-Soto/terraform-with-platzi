@@ -15,18 +15,25 @@ ingress_rules = [
     {
         from_port = "22"
         to_port = "22"
-        protocolo = "tcp"
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]# allow any connetion (bad practice, use a VPN)
     },
     {
         from_port = "80"
         to_port = "80"
-        protocolo = "tcp"
+        protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]# allow any connetion for the app
     }
 ]
 
-
+egress_rules = [
+    {
+        from_port = 0# any port
+        to_port = 0# any port
+        protocol = "-1"# any protocol
+        cidr_blocks = ["0.0.0.0/0"]# any IP
+    }
+]
 
 
 

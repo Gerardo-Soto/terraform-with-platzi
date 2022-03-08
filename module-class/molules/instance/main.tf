@@ -20,6 +20,26 @@ resource "aws_instance" "platzi-instance"{
     # Add this instance to a security group
     #               [ Type_resource . Id resource . name resource ]
     security_groups = ["${aws_security_group.ssh_connection.name}"]
+
+    # Provisioner to connect remotely with the module remore-exec
+    # Establishes connection to be used by all
+    # generic remote provisioners
+    provisioner "remote-exec" {
+        connection {
+            type = "ssh"
+            user = "root"#"centos" #Class
+            #password = var.root_password
+            #private_key = "${file("~/.ssh/packer-key")}"# Class
+            private_key = file(var.private_key)#"${file(var.private_key)}" <- Warning
+            host = self.public_ip
+        }
+        # provisioner:
+        inline = [
+            "echo start_app",
+            "date",
+            "docker run -it -d -p 80:80 iscgerard88/infra-mutable:v1"
+        ]
+    }
 }
 
 
@@ -52,13 +72,25 @@ resource "aws_security_group" "ssh_connection" {
         }
     }
 
-    egress {
+    dynamic "egress" {
+        for_each = var.egress_rules
+        content {
+                description      = "egress rule to download images of Docker Hub"
+                from_port        = egress.value.from_port # egress. == dinamic "egress"
+                to_port          = egress.value.to_port 
+                protocol         = egress.value.protocol
+                cidr_blocks      = egress.value.cidr_block#[aws_vpc.main.cidr_block]
+                ipv6_cidr_blocks = egress.value.ipv6_cidr_blocks#[aws_vpc.main.ipv6_cidr_block]
+        }
+    }
+
+    /*egress {
         from_port        = 0
         to_port          = 0
         protocol         = "-1"
         cidr_blocks      = ["0.0.0.0/0"]
         ipv6_cidr_blocks = ["::/0"]
-    }
+    }*/
 
     tags = {
         Name = "allow_tls"
